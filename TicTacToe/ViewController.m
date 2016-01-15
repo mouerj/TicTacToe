@@ -10,6 +10,8 @@
 
 @interface ViewController ()
 
+@property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
+
 // row 0 buttons
 @property (weak, nonatomic) IBOutlet UIButton *button00;
 
@@ -33,8 +35,9 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *button22;
 
+@property (strong, nonatomic) NSMutableArray *ticTac;
 
-
+@property (nonatomic) BOOL move;
 
 @end
 
@@ -44,31 +47,30 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    
-    
-    
+    self.move = YES;
+   // self.whichPlayerLabel.text = @"X";
 }
-
 
 - (IBAction)onButtonPressed:(UIButton *)sender {
-    
-    
-    [sender setTitle:@"X" forState:UIControlStateNormal];
-    
-    NSMutableArray *ticTac = @[ @[ @"button00", @"button01", @"button02" ],
-                                @[ @"button10", @"button11", @"button12" ],
-                                @[ @"button20", @"button21", @"button22" ] ];
-    
-    
-    
-    
+   
+    if (self.move == YES) {
+        [sender setTitle:@"X" forState:UIControlStateNormal];
+        [sender setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+        self.whichPlayerLabel.text = @"O";
+        self.move = NO;
+    }
+    else {
+        [sender setTitle: @"O" forState:UIControlStateNormal];
+        [sender setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+        self.whichPlayerLabel.text = @"X";
+        self.move = YES;
+    }
 
-    
-    
-    
-    
+    NSLog(@"%@", sender.currentTitle);
+         
+
+
 }
-
 
 
 
