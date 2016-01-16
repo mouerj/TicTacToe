@@ -35,9 +35,11 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *button22;
 
-@property (strong, nonatomic) NSMutableArray *ticTac;
-
 @property (nonatomic) BOOL move;
+
+
+@property (weak, nonatomic) IBOutlet UILabel *winnerLabel;
+
 
 @end
 
@@ -68,7 +70,47 @@
 
     NSLog(@"%@", sender.currentTitle);
          
-
+    // assignment of button currentTitle to corresponding
+    
+    NSString *button00String = self.button00.currentTitle;
+    NSString *button01String = self.button01.currentTitle;
+    NSString *button02String = self.button02.currentTitle;
+    
+    NSString *button10String = self.button10.currentTitle;
+    NSString *button11String = self.button11.currentTitle;
+    NSString *button12String = self.button12.currentTitle;
+    
+    NSString *button20String = self.button20.currentTitle;
+    NSString *button21String = self.button21.currentTitle;
+    NSString *button22String = self.button22.currentTitle;
+    
+    // logic to determine winner
+    
+    
+    if (
+        ([button00String isEqualToString:button01String] && [button01String isEqualToString:button02String]) ||
+        ([button10String isEqualToString:button11String] && [button11String isEqualToString:button12String]) ||
+        ([button20String isEqualToString:button21String] && [button21String isEqualToString:button22String]) ||
+        ([button00String isEqualToString:button10String] && [button10String isEqualToString:button20String]) ||
+        ([button01String isEqualToString:button11String] && [button11String isEqualToString:button21String]) ||
+        ([button02String isEqualToString:button12String] && [button12String isEqualToString:button22String])
+        )
+        
+    {
+        self.winnerLabel.text = @"Player <> is the Winner";
+    }
+    
+    
+    
+    
+    // NSLog(@"value of self.winnerLabel.text is: %@", self.winnerLabel.text);
+    //    NSString *test1 = self.button00.currentTitle;
+    //
+    //    NSString *test2 = sender.titleLabel.text;
+    //
+    //    NSLog(@"value of self.button00.currentTitle for button00 is: %@", test1);
+    //
+    //    NSLog(@"value of sender.titleLabel.text for button00 is: %@", test2);
 
 }
 
