@@ -14,29 +14,28 @@
 
 // row 0 buttons
 @property (weak, nonatomic) IBOutlet UIButton *button00;
-
 @property (weak, nonatomic) IBOutlet UIButton *button01;
-
 @property (weak, nonatomic) IBOutlet UIButton *button02;
 
 // row 1 buttons
 
 @property (weak, nonatomic) IBOutlet UIButton *button10;
-
 @property (weak, nonatomic) IBOutlet UIButton *button11;
-
 @property (weak, nonatomic) IBOutlet UIButton *button12;
 
 // row 2 buttons
 
 @property (weak, nonatomic) IBOutlet UIButton *button20;
-
 @property (weak, nonatomic) IBOutlet UIButton *button21;
-
 @property (weak, nonatomic) IBOutlet UIButton *button22;
 
-@property (nonatomic) BOOL move;
+@property BOOL move;
 
+@property   NSArray *buttons;
+
+@property NSString *player1;
+@property NSString *player2;
+@property NSString *player;
 
 @property (weak, nonatomic) IBOutlet UILabel *winnerLabel;
 
@@ -48,72 +47,118 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
+    self.buttons = @[self.button00, self.button01, self.button02, self.button10, self.button11, self.button12, self.button20, self.button21, self.button22];
     self.move = YES;
-   // self.whichPlayerLabel.text = @"X";
+    self.player1 = @"Player One";
+    self.player2 = @"Player Two";
+    
+    if (self.move == YES) {
+        self.whichPlayerLabel.text = [NSString stringWithFormat:@"It's Player %@'s turn", self.player1];
+    }else {
+        self.whichPlayerLabel.text = [NSString stringWithFormat:@"It's Player %@'s turn", self.player2];
+    }
+    
 }
 
 - (IBAction)onButtonPressed:(UIButton *)sender {
-   
-    if (self.move == YES) {
+    
+    if (self.move) {
+        self.whichPlayerLabel.text = [NSString stringWithFormat:@"It's Player %@'s turn", self.player2];
         [sender setTitle:@"X" forState:UIControlStateNormal];
         [sender setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-        self.whichPlayerLabel.text = @"O";
-        self.move = NO;
     }
     else {
+        self.whichPlayerLabel.text = [NSString stringWithFormat:@"It's Player %@'s turn", self.player1];
         [sender setTitle: @"O" forState:UIControlStateNormal];
         [sender setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-        self.whichPlayerLabel.text = @"X";
-        self.move = YES;
-    }
-
-    NSLog(@"%@", sender.currentTitle);
-         
-    // assignment of button currentTitle to corresponding
-    
-    NSString *button00String = self.button00.currentTitle;
-    NSString *button01String = self.button01.currentTitle;
-    NSString *button02String = self.button02.currentTitle;
-    
-    NSString *button10String = self.button10.currentTitle;
-    NSString *button11String = self.button11.currentTitle;
-    NSString *button12String = self.button12.currentTitle;
-    
-    NSString *button20String = self.button20.currentTitle;
-    NSString *button21String = self.button21.currentTitle;
-    NSString *button22String = self.button22.currentTitle;
-    
-    // logic to determine winner
-    
-    
-    if (
-        ([button00String isEqualToString:button01String] && [button01String isEqualToString:button02String]) ||
-        ([button10String isEqualToString:button11String] && [button11String isEqualToString:button12String]) ||
-        ([button20String isEqualToString:button21String] && [button21String isEqualToString:button22String]) ||
-        ([button00String isEqualToString:button10String] && [button10String isEqualToString:button20String]) ||
-        ([button01String isEqualToString:button11String] && [button11String isEqualToString:button21String]) ||
-        ([button02String isEqualToString:button12String] && [button12String isEqualToString:button22String])
-        )
         
-    {
-        self.winnerLabel.text = @"Player <> is the Winner";
+    }
+   
+    self.move = !self.move;
+    [sender setEnabled:NO];
+    NSString *playerWon = [self winningPlayer:sender.currentTitle];
+    if (playerWon != nil) {
+        NSString *title = [NSString stringWithFormat:@"Player %@ Won!", self.player];
+        UIAlertController *alertView = [UIAlertController alertControllerWithTitle:title  message:@"Thanks for Playing!" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *playAgain = [UIAlertAction actionWithTitle:@"Play Again?" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            for (UIButton *button in self.buttons) {
+                [button setTitle:nil forState:UIControlStateNormal];
+                [button setEnabled:YES];
+            }
+        }];
+        [self presentViewController:alertView animated:YES completion:^{
+        }];
+        [alertView addAction:playAgain];
+        
+    } else {
+        BOOL hasNilButton = NO;
+        for (UIButton * button in self.buttons) {
+            if ([button currentTitle] == nil) {
+                hasNilButton = YES;
+            }
+        }
+        if (!hasNilButton) {
+            UIAlertController *alertView =[UIAlertController alertControllerWithTitle:@"Tie Game" message:@"Play Again"preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *playAgain = [UIAlertAction actionWithTitle:@"Play Again?" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                for (UIButton *button in self.buttons) {
+                    [button setTitle:nil forState:UIControlStateNormal];
+                    [button setEnabled:YES];
+
+            }
+        }];
+        [self presentViewController:alertView animated:YES completion:^{
+                    
+        }];
+                     
+        [alertView addAction:playAgain];
+        }
+    }
+}
+- (NSString *)winningPlayer:(NSString *)sender {
+    if ([sender isEqualToString:[NSString stringWithFormat:@"X"]]) {
+        self.player = self.player1;
+    }else {
+        self.player = self.player2;
+    }
+    if ([[self.buttons[0] currentTitle] isEqualToString:[self.buttons[1] currentTitle]] && [[self.buttons[1] currentTitle] isEqualToString:[self.buttons[2] currentTitle]]) {
+        
+        return self.player;
+   
+    } else if ([[self.buttons[3] currentTitle] isEqualToString:[self.buttons[4] currentTitle]] && [[self.buttons[4] currentTitle] isEqualToString:[self.buttons[5] currentTitle]]) {
+        
+        return self.player;
+    
+    } else if ([[self.buttons[6] currentTitle] isEqualToString:[self.buttons[7] currentTitle]] && [[self.buttons[7] currentTitle] isEqualToString:[self.buttons[8] currentTitle]]) {
+        
+        return self.player;
+        
+    } else if ([[self.buttons[0] currentTitle] isEqualToString:[self.buttons[3] currentTitle]] && [[self.buttons[3] currentTitle] isEqualToString:[self.buttons[6] currentTitle]]) {
+        
+        return self.player;
+        
+    } else if ([[self.buttons[1] currentTitle] isEqualToString:[self.buttons[4] currentTitle]] && [[self.buttons[4] currentTitle] isEqualToString:[self.buttons[7] currentTitle]]) {
+        
+        return self.player;
+        
+    } else if ([[self.buttons[2] currentTitle] isEqualToString:[self.buttons[5] currentTitle]] && [[self.buttons[5] currentTitle] isEqualToString:[self.buttons[8] currentTitle]]) {
+        
+        return self.player;
+        
+    } else if ([[self.buttons[2] currentTitle] isEqualToString:[self.buttons[4] currentTitle]] && [[self.buttons[4] currentTitle] isEqualToString:[self.buttons[6] currentTitle]]) {
+        
+        return self.player;
+        
+    } else if ([[self.buttons[0] currentTitle] isEqualToString:[self.buttons[4] currentTitle]] && [[self.buttons[4] currentTitle] isEqualToString:[self.buttons[8] currentTitle]]) {
+        
+        return self.player;
+        
+    } else {
+        
+        return nil;
     }
     
-    
-    
-    
-    // NSLog(@"value of self.winnerLabel.text is: %@", self.winnerLabel.text);
-    //    NSString *test1 = self.button00.currentTitle;
-    //
-    //    NSString *test2 = sender.titleLabel.text;
-    //
-    //    NSLog(@"value of self.button00.currentTitle for button00 is: %@", test1);
-    //
-    //    NSLog(@"value of sender.titleLabel.text for button00 is: %@", test2);
 
 }
 
-
-
+        
 @end
